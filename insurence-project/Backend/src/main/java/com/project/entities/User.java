@@ -2,9 +2,17 @@ package com.project.entities;
 
 import com.project.enums.Role;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -22,4 +30,6 @@ public class User {
     @Column(length = 80)
     private String password;
 
+    @OneToMany(mappedBy = "user")
+    private List<UserPolicy> userPolicies;
 }
