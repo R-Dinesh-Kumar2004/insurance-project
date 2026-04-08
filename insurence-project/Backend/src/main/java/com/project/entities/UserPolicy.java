@@ -1,7 +1,6 @@
 package com.project.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,10 +13,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class UserPolicy {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "policy_id")
     private Policy policy;
 
     private LocalDateTime purchaseDate;
