@@ -25,5 +25,7 @@ public class UserPolicy {
     @JoinColumn(name = "policy_id")
     private Policy policy;
 
-    private LocalDateTime purchaseDate;
+    private String status; // ACTIVE, EXPIRED, PENDING
+    private LocalDateTime startDate;
+    private LocalDate endDate;
 }
