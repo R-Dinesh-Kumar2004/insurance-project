@@ -1,27 +1,27 @@
 package com.project.mappers;
 
-import com.project.dtos.request.UserRegisterRequestDto;
+import com.project.dtos.request.RegisterRequestDto;
 import com.project.dtos.response.UserResponseDto;
 import com.project.entities.User;
 import com.project.enums.Role;
 
 public class UserMapper {
-    public User userRequestDtoToUser(UserRegisterRequestDto userRegisterRequestDto){
+    public static User toUser(RegisterRequestDto registerRequestDto){
         User user = new User();
 
-        user.setName(userRegisterRequestDto.getName());
-        if(userRegisterRequestDto.getRole().equals("USER")){
+        user.setName(registerRequestDto.getName());
+        if(registerRequestDto.getRole().equals("USER")){
             user.setRole(Role.USER);
-        } else if (userRegisterRequestDto.getRole().equals("ADMIN")) {
+        } else if (registerRequestDto.getRole().equals("ADMIN")) {
             user.setRole(Role.ADMIN);
         }
-        user.setEmail(userRegisterRequestDto.getEmail());
-        user.setPassword(userRegisterRequestDto.getPassword());
+        user.setEmail(registerRequestDto.getEmail());
+        user.setPassword(registerRequestDto.getPassword());
 
         return user;
     }
 
-    public UserResponseDto UsertoUserResponseDto(User user){
+    public static UserResponseDto toUserResponseDto(User user){
         UserResponseDto dto = new UserResponseDto();
 
         dto.setId(user.getId());

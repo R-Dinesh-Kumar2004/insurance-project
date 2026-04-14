@@ -20,6 +20,8 @@ public class Policy {
 
     @Column(length = 50)
     private String name;
+
+    @Enumerated(EnumType.STRING)
     private Type type;
 
     private double premium;

@@ -7,7 +7,7 @@ import com.project.enums.Type;
 
 public class PolicyMapper {
 
-    public Policy policyRequestDtoToPolicy(PolicyRequestDto policyRequestDto){
+    public static Policy toPolicy(PolicyRequestDto policyRequestDto){
         Policy policy = new Policy();
 
         policy.setName(policyRequestDto.getName());
@@ -26,7 +26,7 @@ public class PolicyMapper {
         return policy;
     }
 
-    public PolicyResponseDto policyToPolicyResponseDto(Policy policy){
+    public static PolicyResponseDto toPolicyResponseDto(Policy policy){
         PolicyResponseDto dto = new PolicyResponseDto();
 
         dto.setId(policy.getId());

@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequestDto {
+public class UpdateRequestDto {
     private String name;
-    private String role;
     private String email;
-    private String password;
 }

@@ -22,6 +22,7 @@ public class User {
     @Column(length = 50)
     private String name;
 
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Column(unique = true, nullable = false)
@@ -30,6 +31,6 @@ public class User {
     @Column(length = 80)
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private List<UserPolicy> userPolicies;
 }
