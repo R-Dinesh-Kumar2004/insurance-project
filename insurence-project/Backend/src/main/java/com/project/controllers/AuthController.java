@@ -23,7 +23,7 @@ public class AuthController {
     public ResponseEntity<ApiResponseDto<UserResponseDto>> register(@RequestBody RegisterRequestDto registerRequestDto) {
         UserResponseDto user = authService.register(registerRequestDto);
         ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>(200, "User registered successfully", user);
-
+        System.out.println(user+" "+response);
         return ResponseEntity.ok(response);
     }
 
