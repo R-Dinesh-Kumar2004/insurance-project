@@ -10,6 +10,8 @@ import com.project.mappers.UserMapper;
 import com.project.repositories.PolicyRepository;
 import com.project.repositories.UserRepository;
 import com.project.services.UserService;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,16 +20,23 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private static final double PREMIUM_WEIGHT = 0.3;
-    private static final double COVERAGE_WEIGHT = 0.3;
-    private static final double WAITING_WEIGHT = 0.2;
-    private static final double CLAIM_WEIGHT = 0.2;
+    private ChatClient chatClient;
 
     @Autowired
     PolicyRepository policyRepository;
 
     @Autowired
     UserRepository userRepository;
+
+    private static final double PREMIUM_WEIGHT = 0.3;
+    private static final double COVERAGE_WEIGHT = 0.3;
+    private static final double WAITING_WEIGHT = 0.2;
+    private static final double CLAIM_WEIGHT = 0.2;
+
+    public UserServiceImpl(OpenAiChatModel chatModel) {
+        this.chatClient = ChatClient.create(chatModel);
+    }
+
 
     @Override
     public UserResponseDto viewProfile(Long id) {
@@ -110,9 +119,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String comparePoliciesWithAi(List<Long> policyIds) {
-        return null;
+        List<Policy> policies = policyRepository.findAllById(policyIds);
+        return chatClient.prompt("Compare the following insurance policies and recommend the best one: " + policies.toString()+"Give response in plain text only. No markdown, no *, no formatting.\n\n")
+                .call()
+                .content()
+                .replaceAll("\\*\\*", "")
+                .replaceAll("\\n", "\n")
+                .replaceAll(" +", " ")
+                .trim();
     }
-
 
     public PolicyResponseDto getBestPolicy(List<Policy> policies) {
 
