@@ -124,4 +124,24 @@ public class UserController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/purchase/{policyId}")
+    public ResponseEntity<ApiResponseDto<String>> purchasePolicy(@PathVariable Long policyId) {
+        String result = userService.purchasePolicy(policyId);
+
+        ApiResponseDto<String> response =
+                new ApiResponseDto<>(200, "Policy purchase result", result);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/my-policies")
+    public ResponseEntity<ApiResponseDto<List<PolicyResponseDto>>> getMyPolicies() {
+        List<PolicyResponseDto> policies = userService.getMyPolicies();
+
+        ApiResponseDto<List<PolicyResponseDto>> response =
+                new ApiResponseDto<>(200, "Policies fetched for user", policies);
+
+        return ResponseEntity.ok(response);
+    }
 }

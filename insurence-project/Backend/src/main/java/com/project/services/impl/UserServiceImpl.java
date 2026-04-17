@@ -5,16 +5,22 @@ import com.project.dtos.response.PolicyResponseDto;
 import com.project.dtos.response.UserResponseDto;
 import com.project.entities.Policy;
 import com.project.entities.User;
+import com.project.entities.UserPolicy;
+import com.project.exceptions.ResourceNotFoundException;
 import com.project.mappers.PolicyMapper;
 import com.project.mappers.UserMapper;
 import com.project.repositories.PolicyRepository;
+import com.project.repositories.UserPolicyRepository;
 import com.project.repositories.UserRepository;
 import com.project.services.UserService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,6 +33,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    UserPolicyRepository userPolicyRepository;
 
     private static final double PREMIUM_WEIGHT = 0.3;
     private static final double COVERAGE_WEIGHT = 0.3;
@@ -122,11 +131,51 @@ public class UserServiceImpl implements UserService {
         List<Policy> policies = policyRepository.findAllById(policyIds);
         return chatClient.prompt("Compare the following insurance policies and recommend the best one: " + policies.toString()+"Give response in plain text only. No markdown, no *, no formatting.\n\n")
                 .call()
-                .content()
-                .replaceAll("\\*\\*", "")
-                .replaceAll("\\n", "\n")
-                .replaceAll(" +", " ")
-                .trim();
+                .content();
+    }
+
+    @Override
+    public String purchasePolicy(Long policyId) {
+        Policy policy = policyRepository.findById(policyId)
+                .orElseThrow(() -> new RuntimeException("Policy not found"));
+
+        Authentication authentication  = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+
+        User user = userRepository.findByEmail(userEmail);
+
+        if(user == null) {
+            throw new ResourceNotFoundException("User not found");
+        }
+        UserPolicy userPolicy = new UserPolicy();
+        userPolicy.setUser(user);
+        userPolicy.setPolicy(policy);
+        userPolicy.setPurchaseDate(LocalDateTime.now());
+
+        user.getUserPolicies().add(userPolicy);
+        policy.getUserPolicies().add(userPolicy);
+
+        userPolicyRepository.save(userPolicy);
+
+        return policy.getName() + " purchased successfully!";
+    }
+
+    @Override
+    public List<PolicyResponseDto> getMyPolicies() {
+        Authentication authentication  = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+
+        User user = userRepository.findByEmail(userEmail);
+
+        if(user == null) {
+            throw new ResourceNotFoundException("User not found");
+        }
+
+        List<PolicyResponseDto> policies = user.getUserPolicies().stream()
+                .map(up -> PolicyMapper.toPolicyResponseDto(up.getPolicy()))
+                .toList();
+
+        return policies;
     }
 
     public PolicyResponseDto getBestPolicy(List<Policy> policies) {

@@ -16,4 +16,6 @@ public interface UserService {
     public List<PolicyResponseDto> getAllPolicies();
     public PolicyResponseDto comparePolicies(List<Long> policyIds);
     public String comparePoliciesWithAi(List<Long> policyIds);
+    public String purchasePolicy(Long policyId);
+    public List<PolicyResponseDto> getMyPolicies();
 }
